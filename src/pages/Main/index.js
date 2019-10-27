@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Keyboard, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -18,7 +19,7 @@ import {
 } from './styles';
 import api from '../../services/api';
 
-const Main = () => {
+const Main = ({ navigation }) => {
     const [users, setUsers] = useState([]);
     const [newUser, setNewUser] = useState('');
     const [loading, setLoading] = useState(false);
@@ -43,6 +44,10 @@ const Main = () => {
         setLoading(false);
 
         Keyboard.dismiss();
+    }
+
+    function handleNavigate(user) {
+        navigation.navigate('User', { user });
     }
 
     useEffect(() => {
@@ -86,7 +91,11 @@ const Main = () => {
                         <Name>{item.name}</Name>
                         <Bio>{item.bio}</Bio>
 
-                        <ProfileButton onPress={() => {}}>
+                        <ProfileButton
+                            onPress={() => {
+                                handleNavigate(item);
+                            }}
+                        >
                             <ProfileButtonText>Ver perfil</ProfileButtonText>
                         </ProfileButton>
                     </User>
@@ -98,6 +107,12 @@ const Main = () => {
 
 Main.navigationOptions = {
     title: 'Usuários',
+};
+
+Main.propTypes = {
+    navigation: PropTypes.shape({
+        navigate: PropTypes.func,
+    }).isRequired,
 };
 
 export default Main;

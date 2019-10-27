@@ -71,7 +71,13 @@ const User = ({ navigation }) => {
                     data={stars}
                     keyExtractor={star => String(star.id)}
                     renderItem={({ item }) => (
-                        <Starred>
+                        <Starred
+                            onPress={() =>
+                                navigation.navigate('Repository', {
+                                    repository: item,
+                                })
+                            }
+                        >
                             <OwnerAvatar
                                 source={{ uri: item.owner.avatar_url }}
                             />
@@ -94,6 +100,7 @@ const User = ({ navigation }) => {
 User.propTypes = {
     navigation: PropTypes.shape({
         getParam: PropTypes.func,
+        navigate: PropTypes.func,
     }).isRequired,
 };
 

@@ -21,23 +21,39 @@ const User = ({ navigation }) => {
     const [stars, setStars] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    async function load(newPage = 1) {
+        try {
+            const response = await api.get(`/users/${user.login}/starred`, {
+                params: { page: newPage },
+            });
+
+            if (newPage >= 2) {
+                setStars([...stars, ...response.data]);
+            } else {
+                setStars(response.data);
+            }
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    }
 
     useEffect(() => {
-        async function getStarredRepos() {
-            try {
-                const response = await api.get(`/users/${user.login}/starred`, {
-                    params: { page },
-                });
-                setStars([...stars, ...response.data]);
-            } finally {
-                setLoading(false);
-            }
-        }
-        getStarredRepos();
-    }, [page]);
+        load();
+    }, []);
 
     function loadMore() {
-        setPage(page + 1);
+        const nextPage = page + 1;
+        setPage(nextPage);
+        load(nextPage);
+    }
+
+    function refresh() {
+        setRefreshing(true);
+        setStars([]);
+        load();
     }
 
     return (
@@ -65,7 +81,8 @@ const User = ({ navigation }) => {
                             </Info>
                         </Starred>
                     )}
-                    refreshing={loading}
+                    onRefresh={refresh}
+                    refreshing={refreshing}
                     onEndReachedThreshold={0.2}
                     onEndReached={loadMore}
                 />

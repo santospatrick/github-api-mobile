@@ -16,13 +16,13 @@ yarn
 react-native run-ios --simulator "iPhone X"
 
 # android
-react-native run-ios
+react-native run-android
 ```
 
 ## Features
-[x] Styled Components
-[x] Reactotron
-[x] WebView
-[x] Eslint + prettier + EditorConfig
-[x] Navigation
-[x] Api calls
+- [x] Styled Components
+- [x] Reactotron
+- [x] WebView
+- [x] Eslint + prettier + EditorConfig
+- [x] Navigation
+- [x] Api calls

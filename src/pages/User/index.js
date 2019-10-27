@@ -12,17 +12,23 @@ import {
     Info,
     Title,
     Author,
+    Loading,
 } from './styles';
 import api from '../../services/api';
 
 const User = ({ navigation }) => {
     const user = navigation.getParam('user');
     const [stars, setStars] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function getStarredRepos() {
-            const response = await api.get(`/users/${user.login}/starred`);
-            setStars(response.data);
+            try {
+                const response = await api.get(`/users/${user.login}/starred`);
+                setStars(response.data);
+            } finally {
+                setLoading(false);
+            }
         }
         getStarredRepos();
     }, []);
@@ -35,19 +41,25 @@ const User = ({ navigation }) => {
                 <Bio>{user.bio}</Bio>
             </Header>
 
-            <StarsList
-                data={stars}
-                keyExtractor={star => String(star.id)}
-                renderItem={({ item }) => (
-                    <Starred>
-                        <OwnerAvatar source={{ uri: item.owner.avatar_url }} />
-                        <Info>
-                            <Title>{item.name}</Title>
-                            <Author>{item.owner.login}</Author>
-                        </Info>
-                    </Starred>
-                )}
-            />
+            {loading ? (
+                <Loading />
+            ) : (
+                <StarsList
+                    data={stars}
+                    keyExtractor={star => String(star.id)}
+                    renderItem={({ item }) => (
+                        <Starred>
+                            <OwnerAvatar
+                                source={{ uri: item.owner.avatar_url }}
+                            />
+                            <Info>
+                                <Title>{item.name}</Title>
+                                <Author>{item.owner.login}</Author>
+                            </Info>
+                        </Starred>
+                    )}
+                />
+            )}
         </Container>
     );
 };

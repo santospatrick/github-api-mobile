@@ -1,11 +1,11 @@
 # github-api-mobile
 Consuming GitHub API with React Native
 
-<center>
+<p style="text-align: center;">
   <img src="docs/first.png" width="260" />
   <img src="docs/second.png" width="260" />
   <img src="docs/third.png" width="260" />
-</center>
+</p>
 
 ## Setup
 

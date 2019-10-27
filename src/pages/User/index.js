@@ -19,19 +19,26 @@ import api from '../../services/api';
 const User = ({ navigation }) => {
     const user = navigation.getParam('user');
     const [stars, setStars] = useState([]);
+    const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function getStarredRepos() {
             try {
-                const response = await api.get(`/users/${user.login}/starred`);
-                setStars(response.data);
+                const response = await api.get(`/users/${user.login}/starred`, {
+                    params: { page },
+                });
+                setStars([...stars, ...response.data]);
             } finally {
                 setLoading(false);
             }
         }
         getStarredRepos();
-    }, []);
+    }, [page]);
+
+    function loadMore() {
+        setPage(page + 1);
+    }
 
     return (
         <Container>
@@ -58,6 +65,9 @@ const User = ({ navigation }) => {
                             </Info>
                         </Starred>
                     )}
+                    refreshing={loading}
+                    onEndReachedThreshold={0.2}
+                    onEndReached={loadMore}
                 />
             )}
         </Container>

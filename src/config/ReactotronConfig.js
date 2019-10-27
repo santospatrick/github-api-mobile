@@ -7,3 +7,5 @@ const tron = Reactotron.setAsyncStorageHandler(AsyncStorage)
     .connect();
 
 console.tron = tron;
+
+tron.clear();

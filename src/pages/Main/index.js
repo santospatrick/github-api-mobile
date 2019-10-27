@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Keyboard } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Keyboard, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import {
@@ -20,8 +21,10 @@ import api from '../../services/api';
 const Main = () => {
     const [users, setUsers] = useState([]);
     const [newUser, setNewUser] = useState('');
+    const [loading, setLoading] = useState(false);
 
     async function handleSubmit() {
+        setLoading(true);
         const response = await api.get(`/users/${newUser}`);
 
         const data = {
@@ -31,11 +34,28 @@ const Main = () => {
             avatar: response.data.avatar_url,
         };
 
-        setUsers([...users, data]);
+        const newUsers = [...users, data];
+
+        await AsyncStorage.setItem('@users', JSON.stringify(newUsers));
+
+        setUsers(newUsers);
         setNewUser('');
+        setLoading(false);
 
         Keyboard.dismiss();
     }
+
+    useEffect(() => {
+        async function getUsers() {
+            const value = await AsyncStorage.getItem('@users');
+
+            if (value !== null) {
+                setUsers(JSON.parse(value));
+            }
+        }
+
+        getUsers();
+    }, []);
 
     return (
         <Container>
@@ -49,8 +69,12 @@ const Main = () => {
                     returnKeyType="send"
                     onSubmitEditing={handleSubmit}
                 />
-                <SubmitButton onPress={handleSubmit}>
-                    <Icon name="add" size={20} color="#fff" />
+                <SubmitButton loading={loading} onPress={handleSubmit}>
+                    {loading ? (
+                        <ActivityIndicator color="#fff" />
+                    ) : (
+                        <Icon name="add" size={20} color="#fff" />
+                    )}
                 </SubmitButton>
             </Form>
             <List
